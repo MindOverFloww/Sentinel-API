@@ -1,10 +1,63 @@
-html, body, #root {
-  margin: 0;
-  min-height: 100%;
-  font-family: Arial, sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-mesh: radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.98) 0px, transparent 50%),
+               radial-gradient(at 100% 0%, rgba(238, 239, 244, 0.9) 0px, transparent 50%),
+               radial-gradient(at 100% 100%, rgba(230, 232, 238, 0.8) 0px, transparent 50%),
+               radial-gradient(at 0% 100%, rgba(245, 246, 250, 0.85) 0px, transparent 50%),
+               radial-gradient(at 50% 50%, rgba(255, 255, 255, 1) 0px, transparent 65%);
+  }
+
+  body {
+    background-color: #f3f4f6;
+    background-image: var(--bg-mesh);
+    background-attachment: fixed;
+    background-size: cover;
+    color: #121214;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+  }
 }
 
-body {
-  background: #f5f7fb;
-  color: #111827;
+/* Glassmorphism custom classes */
+.glass-light {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.04);
+}
+
+.glass-smoked {
+  background: rgba(36, 36, 38, 0.78);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+}
+
+.glass-pill {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
 }
