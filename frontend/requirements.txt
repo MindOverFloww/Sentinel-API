@@ -1,0 +1,14 @@
+# Frontend dependencies for API Sentinel
+# Team members can install quickly with:
+# npm install
+# or install the packages individually below:
+
+react
+react-dom
+react-router-dom
+axios
+vite
+typescript
+@vitejs/plugin-react
+@types/react
+@types/react-dom
