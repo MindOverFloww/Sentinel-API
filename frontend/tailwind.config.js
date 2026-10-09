@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Montserrat', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       borderRadius: {
@@ -29,10 +29,12 @@ export default {
           dark: 'rgba(20, 20, 20, 0.88)',
         },
         charcoal: {
-          900: '#121214',
-          800: '#1C1C1F',
-          700: '#27272A',
-          600: '#3F3F46',
+          950: '#0c0c0e',
+          900: '#141416',
+          800: '#1e1e22',
+          700: '#2b2b30',
+          600: '#3e3e46',
+          500: '#565660',
         }
       },
       boxShadow: {
@@ -40,9 +42,11 @@ export default {
         'glass-lift': '0 16px 40px -10px rgba(0, 0, 0, 0.12)',
         'smoked-lift': '0 20px 48px -10px rgba(0, 0, 0, 0.35)',
         'pill': '0 4px 20px rgba(0, 0, 0, 0.08)',
+        'glass-light': '0 20px 45px -15px rgba(0, 0, 0, 0.06), 0 0 1px 1px rgba(255, 255, 255, 0.9) inset',
+        'glass-dark': '0 25px 50px -15px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.18) inset',
+        'floating-dock': '0 24px 48px -12px rgba(0, 0, 0, 0.18), 0 0 1px 1px rgba(255, 255, 255, 0.6) inset',
       }
     },
   },
   plugins: [],
 }
-
