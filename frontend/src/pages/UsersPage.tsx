@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 // Self-contained Modern Glassmorphism UI for UsersPage
 export const UsersPage: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const isDarkMode = false;
   const [activeDayIdx, setActiveDayIdx] = useState(2); // Wednesday default
   const [selectedMonth, setSelectedMonth] = useState('May 2025');
 
@@ -24,253 +24,40 @@ export const UsersPage: React.FC = () => {
 
   const activeDay = weeklyAuthData[activeDayIdx] || weeklyAuthData[2];
 
-  // Dynamic Theme Palette
+  // Fixed Light Palette
   const theme = {
-    bgImage: isDarkMode 
-      ? 'radial-gradient(circle at 50% 20%, rgba(25, 26, 32, 0.95), rgba(10, 11, 14, 0.98)), url("/glass_bg.jpg")'
-      : 'url("/glass_bg.jpg")',
-    overlayBg: isDarkMode ? 'rgba(10, 11, 14, 0.72)' : 'rgba(246, 248, 252, 0.32)',
-    textPrimary: isDarkMode ? '#f8f9fa' : '#121316',
-    textMuted: isDarkMode ? 'rgba(255, 255, 255, 0.52)' : 'rgba(18, 19, 22, 0.52)',
+    textPrimary: '#121316',
+    textMuted: 'rgba(18, 19, 22, 0.52)',
     // Light glass card token
-    lightGlassBg: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.48)',
-    lightGlassBorder: isDarkMode ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.82)',
-    lightGlassShadow: isDarkMode 
-      ? '0 24px 50px -12px rgba(0, 0, 0, 0.6)' 
-      : '0 20px 45px -12px rgba(15, 23, 42, 0.08)',
+    lightGlassBg: 'rgba(255, 255, 255, 0.72)',
+    lightGlassBorder: 'rgba(255, 255, 255, 0.9)',
+    lightGlassShadow: '0 8px 32px rgba(0, 0, 0, 0.04)',
     // Dark smoked glass card token
-    darkGlassBg: isDarkMode ? 'rgba(18, 19, 24, 0.92)' : 'rgba(30, 31, 36, 0.82)',
-    darkGlassBorder: isDarkMode ? 'rgba(255, 255, 255, 0.22)' : 'rgba(255, 255, 255, 0.16)',
-    darkGlassShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.45)',
+    darkGlassBg: '#222225',
+    darkGlassBorder: 'rgba(255, 255, 255, 0.1)',
+    darkGlassShadow: '0 12px 36px rgba(0, 0, 0, 0.22)',
   };
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        width: '100%',
-        backgroundImage: theme.bgImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        fontFamily: "'Plus Jakarta Sans', Montserrat, sans-serif",
-        color: theme.textPrimary,
-        overflowX: 'hidden',
-        paddingBottom: '130px',
-        transition: 'background 0.3s ease',
-      }}
-    >
-      {/* Blurred Architectural Backdrop Layer */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: theme.overlayBg,
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-
-      {/* Slim Vertical Left Dock Navigation */}
-      <aside
-        style={{
-          position: 'fixed',
-          left: '24px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 50,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          padding: '12px 8px',
-          borderRadius: '999px',
-          background: 'rgba(30, 31, 36, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.18)',
-          boxShadow: '0 24px 45px -10px rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-        }}
-      >
-        <button
-          title="Overview / Grid"
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: 'none',
-            background: 'transparent',
-            color: 'rgba(255, 255, 255, 0.6)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease',
-          }}
-          onClick={() => (window.location.href = '/')}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="3" width="7" height="7" rx="1.5" />
-            <rect x="14" y="3" width="7" height="7" rx="1.5" />
-            <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            <rect x="3" y="14" width="7" height="7" rx="1.5" />
-          </svg>
-        </button>
-
-        <button
-          title="API Traffic"
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: 'none',
-            background: 'transparent',
-            color: 'rgba(255, 255, 255, 0.6)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease',
-          }}
-          onClick={() => (window.location.href = '/traffic')}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        </button>
-
-        {/* Active Users Dock Icon */}
-        <button
-          title="Users (Active)"
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: 'none',
-            background: '#ffffff',
-            color: '#0c0d0e',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(255, 255, 255, 0.3)',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-        </button>
-
-        <button
-          title="Theme Toggle"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            border: 'none',
-            background: 'rgba(255, 255, 255, 0.1)',
-            color: '#ffffff',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          {isDarkMode ? (
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5" />
-              <line x1="12" y1="1" x2="12" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="23" />
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-              <line x1="1" y1="12" x2="3" y2="12" />
-              <line x1="21" y1="12" x2="23" y2="12" />
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-            </svg>
-          ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-          )}
-        </button>
-      </aside>
-
-      {/* Main Glass Content Container */}
-      <main
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          maxWidth: '1420px',
-          margin: '0 auto',
-          padding: '36px 36px 40px 108px',
-        }}
-      >
-        {/* Oversized Thin Page Title */}
-        <header style={{ textAlign: 'center', marginBottom: '34px', position: 'relative' }}>
+    <div className="space-y-8 animate-fadeIn">
+      <div className="min-w-0 w-full">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase tracking-widest font-semibold text-zinc-500">
+              Identity & Access Control
+            </span>
           <h1
-            style={{
-              fontSize: 'clamp(3rem, 6.2vw, 4.8rem)',
-              fontWeight: 200,
-              letterSpacing: '-0.04em',
-              color: theme.textPrimary,
-              lineHeight: 1.05,
-              margin: 0,
-            }}
+            className="text-4xl lg:text-5xl font-extralight text-zinc-950 mt-1"
           >
             Users
           </h1>
-          <p
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: theme.textMuted,
-              marginTop: '6px',
-            }}
-          >
-            API Sentinel // Identity & Role-Based Access Control
+          <p className="text-sm text-zinc-600 mt-1 max-w-xl">
+            Monitor account activity, authentication posture, and role-based access.
           </p>
-
-          {/* Quick theme pill switch in header */}
-          <div style={{ position: 'absolute', right: 0, top: '10px' }}>
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              style={{
-                background: isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.06)',
-                border: '1px solid ' + (isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'),
-                color: theme.textPrimary,
-                borderRadius: '999px',
-                padding: '6px 14px',
-                fontSize: '11px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              {isDarkMode ? '● Dark Glass' : '○ Light Glass'}
-            </button>
           </div>
         </header>
 
-        {/* 4-COLUMN ASYMMETRIC BENTO GRID */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '16px',
-            width: '100%',
-          }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 w-full">
           {/* ==============================================================
               ROW 1, CARD 1: DARK SMOKED GLASS - IDENTITY 3D HERO CARD
               ============================================================== */}
@@ -906,8 +693,8 @@ export const UsersPage: React.FC = () => {
               (Spans 2 Columns in Bento Grid)
               ============================================================== */}
           <div
+            className="xl:col-span-2"
             style={{
-              gridColumn: 'span 2',
               background: theme.lightGlassBg,
               border: `1px solid ${theme.lightGlassBorder}`,
               boxShadow: theme.lightGlassShadow,
@@ -1084,8 +871,8 @@ export const UsersPage: React.FC = () => {
               (User Sessions vs Concurrent Logins)
               ============================================================== */}
           <div
+            className="xl:col-span-2"
             style={{
-              gridColumn: 'span 2',
               background: theme.lightGlassBg,
               border: `1px solid ${theme.lightGlassBorder}`,
               boxShadow: theme.lightGlassShadow,
@@ -1373,119 +1160,7 @@ export const UsersPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </main>
-
-      {/* Floating Pill Bottom Navigation Dock */}
-      <nav
-        style={{
-          position: 'fixed',
-          bottom: '28px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 60,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '6px 8px',
-          borderRadius: '999px',
-          background: 'rgba(30, 31, 36, 0.88)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 24px 50px -10px rgba(0, 0, 0, 0.45)',
-          backdropFilter: 'blur(30px)',
-          WebkitBackdropFilter: 'blur(30px)',
-        }}
-      >
-        <button
-          onClick={() => (window.location.href = '/')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '999px',
-            fontSize: '13px',
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.7)',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          Overview
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/traffic')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '999px',
-            fontSize: '13px',
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.7)',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          Traffic
-        </button>
-
-        {/* Active Users Pill in Solid White / Black */}
-        <button
-          style={{
-            padding: '10px 22px',
-            borderRadius: '999px',
-            fontSize: '13px',
-            fontWeight: 700,
-            background: '#ffffff',
-            color: '#0c0d0e',
-            border: 'none',
-            cursor: 'default',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)',
-          }}
-        >
-          Users
-        </button>
-
-        <button
-          onClick={() => (window.location.href = '/incidents')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '999px',
-            fontSize: '13px',
-            fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.7)',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-        >
-          Incidents
-        </button>
-
-        {/* Plus Button Action */}
-        <button
-          title="Create New User / Assign Role"
-          style={{
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.14)',
-            color: '#ffffff',
-            border: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            marginLeft: '4px',
-            fontSize: '18px',
-            fontWeight: 300,
-          }}
-          onClick={() => alert('Invite New User / Register Analyst')}
-        >
-          +
-        </button>
-      </nav>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShieldAlert,
@@ -11,8 +11,6 @@ import {
 } from 'lucide-react';
 
 export const Layout: React.FC = () => {
-  const location = useLocation();
-
   const navItems = [
     { to: '/overview', label: 'Overview', icon: LayoutDashboard },
     { to: '/incidents', label: 'Incidents', icon: ShieldAlert },
@@ -56,22 +54,17 @@ export const Layout: React.FC = () => {
       </header>
 
       {/* Main Body with Slim Left Dock and Page Content */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 gap-6">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-8 py-6 gap-3 sm:gap-6">
         {/* Left Slim Vertical Icon Dock */}
-        <aside className="hidden lg:flex flex-col items-center py-6 px-3 rounded-[28px] bg-white/40 border border-white/70 shadow-[0_8px_32px_rgba(0,0,0,0.03)] backdrop-blur-[26px] h-fit sticky top-24 gap-5">
+        <aside className="shrink-0 flex flex-col items-center py-4 sm:py-6 px-1.5 sm:px-3 rounded-[24px] sm:rounded-[28px] bg-white/40 border border-white/70 shadow-[0_8px_32px_rgba(0,0,0,0.03)] backdrop-blur-[26px] h-fit sticky top-24 gap-3 sm:gap-5">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              item.to === '/'
-                ? location.pathname === '/'
-                : location.pathname.startsWith(item.to);
-
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
                 title={item.label}
-                className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                className={({ isActive }) => `w-10 h-10 sm:w-11 sm:h-11 rounded-2xl flex items-center justify-center transition-all duration-200 ${
                   isActive
                     ? 'bg-black text-white shadow-lg shadow-black/20 scale-105'
                     : 'text-zinc-600 hover:text-black hover:bg-white/60'
@@ -89,31 +82,6 @@ export const Layout: React.FC = () => {
         </main>
       </div>
 
-      {/* Floating Pill-shaped Bottom Navigation */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 p-1.5 rounded-full bg-zinc-900/85 text-white border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-[24px]">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive =
-            item.to === '/'
-              ? location.pathname === '/'
-              : location.pathname.startsWith(item.to);
-
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wide transition-all duration-300 ${
-                isActive
-                  ? 'bg-white text-zinc-950 font-semibold shadow-md'
-                  : 'text-zinc-300 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
     </div>
   );
 };
