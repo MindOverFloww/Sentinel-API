@@ -14,10 +14,11 @@ export const Layout: React.FC = () => {
   const location = useLocation();
 
   const navItems = [
-    { to: '/', label: 'Overview', icon: LayoutDashboard },
+    { to: '/overview', label: 'Overview', icon: LayoutDashboard },
     { to: '/incidents', label: 'Incidents', icon: ShieldAlert },
     { to: '/traffic', label: 'Traffic', icon: Activity },
     { to: '/rules', label: 'Rules', icon: Sliders },
+    { to: '/users', label: 'Users', icon: UserIcon },
   ];
 
   return (
