@@ -6,7 +6,7 @@ API Sentinel is a rule-based API intrusion detection and security monitoring sys
 
 - `frontend/` - React + TypeScript + Vite application
 - `backend/` - Spring Boot REST API
-- `docs/` - project documentation, architecture notes, API specs
+- `docs/` - project documentation, architecture notes, API specs (see [docs/PROJECT_SPECIFICATION.md](docs/PROJECT_SPECIFICATION.md))
 - `scripts/` - helper scripts for setup, export, or deployment tasks
 
 ## Stack

@@ -1,10 +1,18 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import TrafficPage from './pages/TrafficPage';
+import UsersPage from './pages/UsersPage';
+
 function App() {
   return (
-    <div>
-      <h1>API Sentinel</h1>
-      <p>Frontend project structure ready.</p>
-      <p>UI screens will be added later.</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<TrafficPage />} />
+        <Route path="/traffic" element={<TrafficPage />} />
+        <Route path="/users" element={<UsersPage />} />
+        <Route path="*" element={<Navigate to="/traffic" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
