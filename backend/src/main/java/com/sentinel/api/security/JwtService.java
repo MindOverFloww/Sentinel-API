@@ -1,73 +1,94 @@
 package com.sentinel.api.security;
 
+import com.sentinel.api.entity.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    private static final String DEFAULT_SECRET = "sentinel_api_secure_jwt_secret_key_minimum_256_bits_length_123456";
-
-    private final SecretKey key;
+    private final SecretKey signingKey;
     private final long expirationMs;
 
-    public JwtService(@Value("${jwt.secret:}") String secret,
-                      @Value("${jwt.expiration-ms:3600000}") long expirationMs) {
-        String effectiveSecret = (secret != null && secret.length() >= 32) ? secret : DEFAULT_SECRET;
-        this.key = Keys.hmacShaKeyFor(effectiveSecret.getBytes(StandardCharsets.UTF_8));
+    public JwtService(
+            @Value("${jwt.secret:}") String secret,
+            @Value("${jwt.expiration-ms:3600000}") long expirationMs) {
+
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                    "JWT_SECRET must be configured before starting the application.");
+        }
+
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(secret);
+
+            if (keyBytes.length < 32) {
+                throw new IllegalStateException(
+                        "JWT_SECRET must decode to at least 32 bytes.");
+            }
+
+            this.signingKey = Keys.hmacShaKeyFor(keyBytes);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException(
+                    "JWT_SECRET must be a valid Base64-encoded secret.", ex);
+        }
+
+        if (expirationMs <= 0) {
+            throw new IllegalStateException(
+                    "JWT expiration must be greater than zero.");
+        }
+
         this.expirationMs = expirationMs;
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+    public String generateToken(User user) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + expirationMs);
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
-                .claims(extraClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(key)
+                .subject(user.getUsername())
+                .claim("role", user.getPrimaryRoleName())
+                .issuedAt(now)
+                .expiration(expiration)
+                .signWith(signingKey)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public String extractUsername(String token) {
+        return extractClaims(token).getSubject();
     }
 
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public boolean isTokenValid(String token, String expectedUsername) {
+        try {
+            Claims claims = extractClaims(token);
+
+            return expectedUsername.equals(claims.getSubject())
+                    && claims.getExpiration() != null
+                    && claims.getExpiration().after(new Date());
+        } catch (JwtException | IllegalArgumentException ex) {
+            return false;
+        }
     }
 
-    private Claims extractAllClaims(String token) {
+    public long getExpirationMs() {
+        return expirationMs;
+    }
+
+    private Claims extractClaims(String token) {
         return Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(signingKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

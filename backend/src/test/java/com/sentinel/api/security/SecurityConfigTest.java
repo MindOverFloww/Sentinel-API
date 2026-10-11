@@ -1,5 +1,6 @@
 package com.sentinel.api.security;
 
+import com.sentinel.api.config.SecurityConfig;
 import com.sentinel.api.controller.DetectionRuleController;
 import com.sentinel.api.dto.rule.CreateDetectionRuleRequest;
 import com.sentinel.api.dto.rule.DetectionRuleEnabledRequest;

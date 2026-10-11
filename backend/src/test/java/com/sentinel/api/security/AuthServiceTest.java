@@ -1,7 +1,7 @@
 package com.sentinel.api.security;
 
-import com.sentinel.api.dto.auth.LoginRequest;
-import com.sentinel.api.dto.auth.LoginResponse;
+import com.sentinel.api.entity.Role;
+import com.sentinel.api.entity.User;
 import com.sentinel.api.repository.UserRepository;
 import com.sentinel.api.service.AuthService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,30 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
-
-    @Mock
-    private AuthenticationManager authenticationManager;
-
-    @Mock
-    private UserDetailsService userDetailsService;
-
-    @Mock
-    private JwtService jwtService;
 
     @Mock
     private UserRepository userRepository;
@@ -45,20 +31,32 @@ class AuthServiceTest {
     private AuthService authService;
 
     @Test
-    @DisplayName("AuthService login generates valid JWT token")
-    void testLoginSuccess() {
-        LoginRequest request = new LoginRequest("admin", "admin123");
-        User userDetails = new User("admin", "admin123", Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+    @DisplayName("AuthService authenticate succeeds for valid credentials")
+    void testAuthenticateSuccess() {
+        User user = new User("admin", "admin@sentinel.local", "encodedPassword");
+        Role role = new Role("ADMIN");
+        user.addRole(role);
 
-        when(userDetailsService.loadUserByUsername("admin")).thenReturn(userDetails);
-        when(jwtService.generateToken(userDetails)).thenReturn("mock-jwt-token");
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
 
-        LoginResponse response = authService.login(request);
+        User authenticated = authService.authenticate("admin", "password123");
 
-        assertNotNull(response);
-        assertEquals("mock-jwt-token", response.getToken());
-        assertEquals("admin", response.getUsername());
-        assertEquals("ROLE_ADMIN", response.getRole());
-        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        assertNotNull(authenticated);
+        assertEquals("admin", authenticated.getUsername());
+        assertEquals("ADMIN", authenticated.getPrimaryRoleName());
+    }
+
+    @Test
+    @DisplayName("AuthService authenticate fails for incorrect password")
+    void testAuthenticateWrongPassword() {
+        User user = new User("admin", "admin@sentinel.local", "encodedPassword");
+        user.addRole(new Role("ADMIN"));
+
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongPassword", "encodedPassword")).thenReturn(false);
+
+        assertThrows(BadCredentialsException.class, () ->
+                authService.authenticate("admin", "wrongPassword"));
     }
 }
