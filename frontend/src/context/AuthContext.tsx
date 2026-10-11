@@ -11,7 +11,7 @@ export interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string, roleFallback?: UserRole) => Promise<AuthUser>;
+  login: (username: string, password: string) => Promise<AuthUser>;
   logout: () => void;
 }
 
@@ -19,33 +19,26 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(() => {
+    const token = getAuthToken();
     const saved = getCurrentUser();
-    if (saved && saved.username && saved.role) {
+    if (token && saved && saved.username && saved.role) {
       return { username: saved.username, role: saved.role as UserRole };
+    }
+    // Clean out partial or stale items
+    if (!token && saved) {
+      persistCurrentUser(null);
     }
     return null;
   });
 
-  const login = async (username: string, password: string, roleFallback?: UserRole): Promise<AuthUser> => {
-    try {
-      const response = await apiService.login({ username, password });
-      const authUser: AuthUser = {
-        username: response.user.username,
-        role: response.user.role as UserRole,
-      };
-      setUser(authUser);
-      return authUser;
-    } catch (err) {
-      // If backend is offline during frontend inspection, allow demo login fallback
-      const fallbackUser: AuthUser = {
-        username,
-        role: (roleFallback || 'VIEWER') as UserRole,
-      };
-      setUser(fallbackUser);
-      persistCurrentUser(fallbackUser);
-      setAuthToken('mock-session-token');
-      return fallbackUser;
-    }
+  const login = async (username: string, password: string): Promise<AuthUser> => {
+    const response = await apiService.login({ username, password });
+    const authUser: AuthUser = {
+      username: response.user.username,
+      role: response.user.role as UserRole,
+    };
+    setUser(authUser);
+    return authUser;
   };
 
   const logout = () => {

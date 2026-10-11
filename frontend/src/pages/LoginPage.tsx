@@ -10,42 +10,12 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateHome }) => {
   const { login } = useAuth();
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
-  const [selectedRole, setSelectedRole] = useState<'ADMIN' | 'ANALYST' | 'VIEWER'>('ADMIN');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-
-  const demoAccounts = [
-    {
-      role: 'ADMIN' as const,
-      user: 'admin',
-      pass: 'admin123',
-      permissions: 'Full privileges: manage rules, investigate incidents, audit users',
-    },
-    {
-      role: 'ANALYST' as const,
-      user: 'analyst',
-      pass: 'analyst123',
-      permissions: 'Triage & investigate incidents, update lifecycle status',
-    },
-    {
-      role: 'VIEWER' as const,
-      user: 'viewer',
-      pass: 'viewer123',
-      permissions: 'Read-only access: view dashboard & telemetry events',
-    },
-  ];
-
-  const handleQuickFill = (acc: typeof demoAccounts[0]) => {
-    setUsername(acc.user);
-    setPassword(acc.pass);
-    setSelectedRole(acc.role);
-    setStatusMessage(`Populated ${acc.role} demo credentials`);
-    setTimeout(() => setStatusMessage(null), 2500);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +23,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
     setStatusMessage(null);
 
     try {
-      const authUser = await login(username, password, selectedRole);
+      const authUser = await login(username, password);
       setIsLoading(false);
       setStatusMessage(`Authenticated as ${authUser.username} (${authUser.role})`);
       setTimeout(() => {
@@ -96,7 +66,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
               Protected by Sentinel Core
             </h2>
             <p className="text-xs text-neutral-400 font-light leading-relaxed mb-6">
-              Authentication endpoints are continuously audited. Every failed login attempt is recorded and evaluated against the 60-second velocity detection window.
+              Authentication endpoints are continuously audited. Every request is verified with Spring Security JWT tokens and BCrypt cryptographic salted hashes.
             </p>
 
             <div className="space-y-3 mb-6">
@@ -114,7 +84,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
                   Cryptographic Standard
                 </div>
                 <div className="text-xs font-semibold text-white mt-0.5 font-mono">
-                  HMAC-SHA256 JWT + BCrypt Salt
+                  HMAC-SHA384 JWT + BCrypt Salt
                 </div>
               </div>
             </div>
@@ -134,21 +104,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
               <span className="text-[11px] font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400">
                 Console Authentication
               </span>
-              {onNavigateHome && (
-                <button
-                  onClick={onNavigateHome}
-                  className="text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white transition-colors"
-                >
-                  ← Back to Dashboard
-                </button>
-              )}
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-extralight tracking-tight text-neutral-900 dark:text-white mb-2">
               Sign In
             </h1>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 font-light mb-6">
-              Select a preset role or enter credentials to access security telemetry.
+              Enter your registered username and password to access the Sentinel console.
             </p>
 
             {/* Status Toast */}
@@ -158,38 +120,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
                 <span>{statusMessage}</span>
               </div>
             )}
-
-            {/* Demo Role Pills */}
-            <div className="mb-6">
-              <div className="text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider mb-2">
-                Quick-Select Role:
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {demoAccounts.map((acc) => {
-                  const isSelected = selectedRole === acc.role;
-                  return (
-                    <button
-                      key={acc.role}
-                      type="button"
-                      onClick={() => handleQuickFill(acc)}
-                      className={`p-2.5 rounded-2xl text-left border transition-all duration-200 ${
-                        isSelected
-                          ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white shadow-md'
-                          : 'bg-black/[0.02] dark:bg-white/[0.04] border-black/10 dark:border-white/10 text-neutral-800 dark:text-neutral-200 hover:bg-black/[0.05]'
-                      }`}
-                    >
-                      <div className="text-xs font-bold">{acc.role}</div>
-                      <div className="text-[10px] opacity-75 font-mono truncate">{acc.user}</div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Permission description */}
-              <div className="mt-2 text-[10px] text-neutral-500 dark:text-neutral-400 italic">
-                {demoAccounts.find((a) => a.role === selectedRole)?.permissions}
-              </div>
-            </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">

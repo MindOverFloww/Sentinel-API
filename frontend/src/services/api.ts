@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 export function getAuthToken(): string | null {
   return localStorage.getItem('sentinel_token');
@@ -48,6 +48,13 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   });
 
   if (!response.ok) {
+    if (response.status === 401 && endpoint !== '/auth/login') {
+      setAuthToken(null);
+      setCurrentUser(null);
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
     let errorDetail = response.statusText;
     try {
       const errJson = await response.json();
@@ -65,7 +72,8 @@ export const apiService = {
   // Auth
   async login(credentials: { username: string; password: string }) {
     const data = await request<{
-      accessToken: string;
+      token?: string;
+      accessToken?: string;
       tokenType: string;
       expiresIn: number;
       user: { id: number; username: string; role: string };
@@ -74,7 +82,8 @@ export const apiService = {
       body: JSON.stringify(credentials),
     });
 
-    setAuthToken(data.accessToken);
+    const jwt = data.token || data.accessToken || '';
+    setAuthToken(jwt);
     setCurrentUser({ username: data.user.username, role: data.user.role });
     return data;
   },
@@ -116,7 +125,7 @@ export const apiService = {
   },
 
   async toggleRuleEnabled(id: string | number, enabled: boolean) {
-    return request<any>(`/rules/${id}/toggle`, {
+    return request<any>(`/rules/${id}/enabled`, {
       method: 'PATCH',
       body: JSON.stringify({ enabled }),
     });
