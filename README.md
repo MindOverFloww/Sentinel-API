@@ -280,21 +280,20 @@ graph TB
     EventInterceptor --> EventService
     IncidentService -->|JPA / Hibernate| H2Local
     IncidentService -.->|Optional Cloud JDBC| PostgresCloud
-
-    %% Interactive Click Links to Source Files
-    click UI href "file:///c:/java%20project/Sentinel-API/frontend/src/App.tsx" "Open frontend/src/App.tsx"
-    click Dashboard href "file:///c:/java%20project/Sentinel-API/frontend/src/pages/DashboardPage.tsx" "Open DashboardPage.tsx"
-    click TrafficView href "file:///c:/java%20project/Sentinel-API/frontend/src/pages/TrafficPage.tsx" "Open TrafficPage.tsx"
-    click IncidentTriage href "file:///c:/java%20project/Sentinel-API/frontend/src/pages/IncidentsPage.tsx" "Open IncidentsPage.tsx"
-    click RulesManager href "file:///c:/java%20project/Sentinel-API/frontend/src/pages/RulesPage.tsx" "Open RulesPage.tsx"
-    click UsersAdmin href "file:///c:/java%20project/Sentinel-API/frontend/src/pages/UsersPage.tsx" "Open UsersPage.tsx"
-    click SecFilter href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/config/SecurityConfig.java" "Open SecurityConfig.java"
-    click JWT href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/security/JwtService.java" "Open JwtService.java"
-    click EventService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/ApiEventService.java" "Open ApiEventService.java"
-    click DetectService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java" "Open DetectionService.java"
-    click RiskService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java" "Open RiskScoringService.java"
-    click IncidentService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java" "Open IncidentService.java"
 ```
+
+| Layer | Component | Description | Source File |
+|---|---|---|---|
+| **Presentation** | React SOC Dashboard | Real-time threat radar & incident triage | [`DashboardPage.tsx`](file:///c:/java%20project/Sentinel-API/frontend/src/pages/DashboardPage.tsx) |
+| **Presentation** | Traffic Inspector | Searchable live HTTP telemetry table | [`TrafficPage.tsx`](file:///c:/java%20project/Sentinel-API/frontend/src/pages/TrafficPage.tsx) |
+| **Presentation** | Rules Manager | Velocity threshold & detection toggles | [`RulesPage.tsx`](file:///c:/java%20project/Sentinel-API/frontend/src/pages/RulesPage.tsx) |
+| **Presentation** | RBAC Users Admin | User provisioning & credentials control | [`UsersPage.tsx`](file:///c:/java%20project/Sentinel-API/frontend/src/pages/UsersPage.tsx) |
+| **Gateway** | Security Filter Chain | JWT validation & route access bounds | [`SecurityConfig.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/config/SecurityConfig.java) |
+| **Gateway** | JWT Auth Provider | HMAC-SHA384 cryptographic token service | [`JwtService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/security/JwtService.java) |
+| **Processing** | Ingestion Service | Normalizes HTTP headers & latency metrics | [`ApiEventService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/ApiEventService.java) |
+| **Detection** | Detection Engine | Rolling 60s windows & SQLi regex rules | [`DetectionService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java) |
+| **Scoring** | Risk Scoring Engine | Additive composite score (0–100) formula | [`RiskScoringService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java) |
+| **Alerting** | Incident Service | Incident deduplication & lifecycle state | [`IncidentService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java) |
 
 ---
 
@@ -328,13 +327,14 @@ flowchart TD
     
     K --> L[("💾 Persist Incident\n(factors, severity, riskScore)")]
     L --> M["📊 Broadcast Telemetry\nAvailable in Frontend Dashboard & Traffic Inspector"]
-
-    %% Interactive Click Links
-    click C href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/entity/ApiEvent.java" "View ApiEvent Entity"
-    click E href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java" "View DetectionService"
-    click H href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java" "View RiskScoringService"
-    click K href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java" "View IncidentService"
 ```
+
+| Pipeline Step | Description | Entity / Service Reference |
+|---|---|---|
+| **Event Ingestion** | Captures method, path, latency, IP, body | [`ApiEvent.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/entity/ApiEvent.java) |
+| **Detection Evaluation** | AST pattern matching & sliding 60s velocity | [`DetectionService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java) |
+| **Risk Calculation** | Additive scoring + context multipliers | [`RiskScoringService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java) |
+| **Incident Deduplication** | Correlates alerts and manages lifecycle | [`IncidentService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java) |
 
 ---
 
@@ -368,14 +368,16 @@ sequenceDiagram
     Note over IncService: Check active incident for IP<br/>Deduplicate or update score & timestamp
     IncService-->>SOC: Incident Available on Next Poll / Refresh
     SOC-->>SOC: Render Critical Flash & Incident Details Modal
-
-    %% Interactive Links
-    click Controller href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/controller/DemoController.java" "Open DemoController"
-    click EventService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/ApiEventService.java" "Open ApiEventService"
-    click DetectService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java" "Open DetectionService"
-    click RiskEngine href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java" "Open RiskScoringService"
-    click IncService href "file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java" "Open IncidentService"
 ```
+
+| Sequence Participant | Layer Role | Implementation Class |
+|---|---|---|
+| **DemoController** | Simulation & Honeypot Endpoint | [`DemoController.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/controller/DemoController.java) |
+| **ApiEventService** | Ingestion & Telemetry Normalizer | [`ApiEventService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/ApiEventService.java) |
+| **DetectionService** | Multi-rule Signature & Velocity Engine | [`DetectionService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/DetectionService.java) |
+| **RiskScoringService** | Mathematical Composite Risk Calculator | [`RiskScoringService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/RiskScoringService.java) |
+| **IncidentService** | Incident Deduplication & State Tracking | [`IncidentService.java`](file:///c:/java%20project/Sentinel-API/backend/src/main/java/com/sentinel/api/service/IncidentService.java) |
+| **Frontend SOC** | Real-Time Glassmorphism UI Radar | [`DashboardPage.tsx`](file:///c:/java%20project/Sentinel-API/frontend/src/pages/DashboardPage.tsx) |
 
 ---
 
@@ -674,5 +676,5 @@ Sentinel-API/
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by TriByte-Org • Protecting Cloud Endpoints in Real Time</sub>
+  <sub>Built with ❤️ by the TriByte-Org • Protecting Cloud Endpoints in Real Time</sub>
 </div>
