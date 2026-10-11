@@ -3,14 +3,36 @@ import { ShieldCheck, Radio, ArrowUpRight } from 'lucide-react';
 
 interface HeroThreatShieldCardProps {
   onInvestigateClick?: () => void;
+  totalEvents?: number;
+  totalIncidents?: number;
+  openIncidents?: number;
+  criticalAndHigh?: number;
+  sqliCount?: number;
 }
 
-export const HeroThreatShieldCard: React.FC<HeroThreatShieldCardProps> = ({ onInvestigateClick }) => {
-  // Ring/donut gauge calculations (radius 48, circumference 2 * PI * 48 = 301.6)
-  const percentage = 94;
+export const HeroThreatShieldCard: React.FC<HeroThreatShieldCardProps> = ({
+  onInvestigateClick,
+  totalEvents = 0,
+  totalIncidents = 0,
+  openIncidents = 0,
+  criticalAndHigh = 0,
+  sqliCount = 0,
+}) => {
+  // Dynamically compute Safe Index based on ratio of total requests vs detected incidents
+  const percentage = totalEvents === 0
+    ? 100
+    : Math.max(10, Math.min(100, Math.round(100 - (totalIncidents / Math.max(totalEvents, 1)) * 100)));
+
   const radius = 48;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  // Dynamic mitigation verdict
+  const verdict = openIncidents === 0
+    ? 'Optimal Defense'
+    : criticalAndHigh > 0
+    ? 'High Alert Defense'
+    : 'Active Triage';
 
   return (
     <div className="glass-dark p-6 md:p-7 flex flex-col justify-between col-span-1 md:col-span-2 lg:col-span-2 row-span-2 relative overflow-hidden group">
@@ -80,16 +102,20 @@ export const HeroThreatShieldCard: React.FC<HeroThreatShieldCardProps> = ({ onIn
         <div className="flex flex-col gap-3 text-left w-full sm:w-auto">
           <div>
             <div className="text-[11px] text-neutral-400 uppercase tracking-wider font-medium">Mitigation Verdict</div>
-            <div className="text-base font-medium text-white flex items-center gap-1.5 mt-0.5">
-              <span>High Alert Defense</span>
+            <button
+              type="button"
+              onClick={onInvestigateClick}
+              className="text-base font-medium text-white flex items-center gap-1.5 mt-0.5 hover:underline cursor-pointer"
+            >
+              <span>{verdict}</span>
               <ArrowUpRight className="w-4 h-4 text-neutral-400" />
-            </div>
+            </button>
           </div>
           <div className="w-full h-[1px] bg-white/10" />
           <div className="flex items-center gap-6">
             <div>
               <div className="text-[10px] text-neutral-400 uppercase tracking-wider">Unresolved</div>
-              <div className="text-lg font-light text-white">4 Incidents</div>
+              <div className="text-lg font-light text-white">{openIncidents} Incidents</div>
             </div>
             <div>
               <div className="text-[10px] text-neutral-400 uppercase tracking-wider">Rule Latency</div>
@@ -103,15 +129,15 @@ export const HeroThreatShieldCard: React.FC<HeroThreatShieldCardProps> = ({ onIn
       <div className="grid grid-cols-3 gap-2.5 pt-2 border-t border-white/10">
         <div className="p-2.5 rounded-xl bg-white/[0.04]">
           <span className="text-[11px] text-neutral-400 font-medium block">Monitored</span>
-          <span className="text-lg md:text-xl font-light text-white">142.8k</span>
+          <span className="text-lg md:text-xl font-light text-white">{totalEvents}</span>
         </div>
         <div className="p-2.5 rounded-xl bg-white/[0.04]">
           <span className="text-[11px] text-neutral-400 font-medium block">Anomalous</span>
-          <span className="text-lg md:text-xl font-light text-white">1,842</span>
+          <span className="text-lg md:text-xl font-light text-white">{totalIncidents}</span>
         </div>
         <div className="p-2.5 rounded-xl bg-white/[0.04]">
-          <span className="text-[11px] text-neutral-400 font-medium block">Blocked SQLi</span>
-          <span className="text-lg md:text-xl font-light text-white">482</span>
+          <span className="text-[11px] text-neutral-400 font-medium block">Flagged SQLi</span>
+          <span className="text-lg md:text-xl font-light text-white">{sqliCount}</span>
         </div>
       </div>
     </div>

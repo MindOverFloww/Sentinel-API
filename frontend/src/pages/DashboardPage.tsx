@@ -221,13 +221,20 @@ export const DashboardPage: React.FC = () => {
       {/* Grid: Clean Functional Components Connected to Real Rules and Data */}
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Tall Hero Card */}
-        <HeroThreatShieldCard onInvestigateClick={() => incidents[0] && setSelectedIncident(incidents[0])} />
+        <HeroThreatShieldCard
+          onInvestigateClick={() => incidents[0] && setSelectedIncident(incidents[0])}
+          totalEvents={summary.totalEvents}
+          totalIncidents={summary.totalIncidents}
+          openIncidents={summary.openIncidents}
+          criticalAndHigh={summary.criticalIncidents + summary.highIncidents}
+          sqliCount={incidents.filter((i) => i.type === 'SQL_INJECTION_PATTERN').length}
+        />
 
         {/* 2. Attack Vector Progress Bars */}
-        <AttackVectorCard />
+        <AttackVectorCard incidents={incidents} />
 
         {/* 3. Black Gradient Area Chart */}
-        <RiskAreaChartCard />
+        <RiskAreaChartCard incidents={incidents} />
 
         {/* 4. Rule Settings with Real Hot Reload */}
         <RuleSettingsCard />

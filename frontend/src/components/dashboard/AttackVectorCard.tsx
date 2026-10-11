@@ -1,27 +1,38 @@
 import React from 'react';
 import { ShieldAlert } from 'lucide-react';
+import { Incident } from '../../types/sentinel';
 
-export const AttackVectorCard: React.FC = () => {
+interface AttackVectorCardProps {
+  incidents?: Incident[];
+}
+
+export const AttackVectorCard: React.FC<AttackVectorCardProps> = ({ incidents = [] }) => {
+  const total = incidents.length;
+
+  const sqliCount = incidents.filter((i) => i.type === 'SQL_INJECTION_PATTERN').length;
+  const bruteCount = incidents.filter((i) => i.type === 'BRUTE_FORCE').length;
+  const abuseCount = incidents.filter((i) => i.type === 'API_ABUSE').length;
+
   const vectors = [
     {
       name: 'SQL Injection-Like Pattern',
       rule: 'SQL_INJECTION_PATTERN',
-      percentage: 42,
-      count: '482 events',
+      percentage: total > 0 ? Math.round((sqliCount / total) * 100) : 0,
+      count: `${sqliCount} incident${sqliCount === 1 ? '' : 's'}`,
       signature: "' OR '1'='1 | UNION SELECT",
     },
     {
       name: 'Brute-Force Authentication',
       rule: 'BRUTE_FORCE',
-      percentage: 35,
-      count: '401 events',
+      percentage: total > 0 ? Math.round((bruteCount / total) * 100) : 0,
+      count: `${bruteCount} incident${bruteCount === 1 ? '' : 's'}`,
       signature: '> 5 failed logins / 60s',
     },
     {
       name: 'API Abuse / Rate Flooding',
       rule: 'API_ABUSE',
-      percentage: 23,
-      count: '264 events',
+      percentage: total > 0 ? Math.round((abuseCount / total) * 100) : 0,
+      count: `${abuseCount} incident${abuseCount === 1 ? '' : 's'}`,
       signature: '> 100 requests / 60s',
     },
   ];
@@ -37,7 +48,7 @@ export const AttackVectorCard: React.FC = () => {
             </h3>
           </div>
           <span className="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
-            Total 1,147 Flagged
+            Total {total} Flagged
           </span>
         </div>
         <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mb-5">

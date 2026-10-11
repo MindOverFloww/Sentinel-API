@@ -1,23 +1,47 @@
 import React from 'react';
-import { AlertCircle, TrendingUp } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { Incident } from '../../types/sentinel';
 
-export const RiskAreaChartCard: React.FC = () => {
-  // SVG points for 24h risk trend (0 to 100)
-  // [x, y] coordinates on a 400x120 viewBox
-  const points = [
-    { x: 0, y: 95, label: '00:00', score: 20 },
-    { x: 50, y: 90, label: '04:00', score: 25 },
-    { x: 100, y: 80, label: '08:00', score: 35 },
-    { x: 150, y: 40, label: '11:00', score: 75 }, // SQLi spike
-    { x: 200, y: 55, label: '14:00', score: 60 },
-    { x: 250, y: 25, label: '17:00', score: 85 }, // Peak Brute Force
-    { x: 300, y: 45, label: '20:00', score: 68 },
-    { x: 350, y: 65, label: '22:00', score: 50 },
-    { x: 400, y: 70, label: 'Now', score: 45 },
-  ];
+interface RiskAreaChartCardProps {
+  incidents?: Incident[];
+}
+
+export const RiskAreaChartCard: React.FC<RiskAreaChartCardProps> = ({ incidents = [] }) => {
+  // Extract real risk scores from incidents (most recent or chronological)
+  const scores = incidents.map((i) => i.riskScore || 20);
+  const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+
+  // Determine peak label
+  const peakTag = maxScore >= 75
+    ? 'Critical Peak'
+    : maxScore >= 50
+    ? 'High Peak'
+    : maxScore >= 25
+    ? 'Moderate Peak'
+    : 'Baseline';
+
+  // Compute SVG chart coordinates (viewBox 400x120, where y=10 is score 100, y=110 is score 0)
+  // Take last 8 incidents or fill with baseline if few
+  const sampleData = scores.length > 0
+    ? scores.slice(-8)
+    : [10, 15, 20, 25, 20];
+
+  const points = sampleData.map((score, index) => {
+    const x = sampleData.length > 1 ? Math.round((index / (sampleData.length - 1)) * 400) : 200;
+    const y = Math.max(10, Math.min(110, Math.round(110 - (score / 100) * 95)));
+    return { x, y, score };
+  });
+
+  // Find index of max point
+  const peakPoint = points.reduce(
+    (max, p) => (p.score > max.score ? p : max),
+    points[0] || { x: 200, y: 55, score: 0 }
+  );
 
   // SVG Area path closing at the bottom
-  const linePath = `M ${points.map((p) => `${p.x},${p.y}`).join(' L ')}`;
+  const linePath = points.length > 0
+    ? `M ${points.map((p) => `${p.x},${p.y}`).join(' L ')}`
+    : 'M 0,110 L 400,110';
   const areaPath = `${linePath} L 400,120 L 0,120 Z`;
 
   return (
@@ -37,14 +61,14 @@ export const RiskAreaChartCard: React.FC = () => {
 
         <div className="flex items-baseline gap-3">
           <span className="text-3xl md:text-4xl font-light tracking-tight text-neutral-900 dark:text-white">
-            85
+            {maxScore}
           </span>
           <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/15 text-neutral-900 dark:text-neutral-100 uppercase tracking-wider">
-            Critical Peak
+            {peakTag}
           </span>
         </div>
         <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
-          Max calculated incident severity observed during authentication flood attack.
+          Max calculated incident severity observed across live detected intrusions.
         </p>
       </div>
 
@@ -81,21 +105,23 @@ export const RiskAreaChartCard: React.FC = () => {
             />
 
             {/* Peak highlight dot */}
-            <circle
-              cx="250"
-              cy="25"
-              r="4.5"
-              className="fill-black dark:fill-white stroke-2 stroke-white dark:stroke-black shadow-md"
-            />
+            {points.length > 0 && (
+              <circle
+                cx={peakPoint.x}
+                cy={peakPoint.y}
+                r="4.5"
+                className="fill-black dark:fill-white stroke-2 stroke-white dark:stroke-black shadow-md"
+              />
+            )}
           </svg>
         </div>
 
         {/* Minimal Time labels */}
         <div className="flex justify-between items-center text-[10px] text-neutral-400 dark:text-neutral-500 font-mono mt-2 pt-1 border-t border-black/5 dark:border-white/10">
-          <span>00:00</span>
-          <span>08:00</span>
-          <span className="font-bold text-neutral-800 dark:text-neutral-200">17:00 (Peak 85)</span>
-          <span>Now</span>
+          <span>Earliest</span>
+          <span>Timeline</span>
+          <span className="font-bold text-neutral-800 dark:text-neutral-200">Peak: {maxScore}</span>
+          <span>Live</span>
         </div>
       </div>
     </div>
