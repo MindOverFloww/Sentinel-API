@@ -113,6 +113,29 @@ export const DashboardPage: React.FC = () => {
 
     setIncidents([newIncident, ...incidents]);
     showToast(`New ${newIncident.severity} Incident Created: ${newIncident.id}`);
+
+    // Proactively send real HTTP requests to the backend demo endpoints
+    (async () => {
+      try {
+        if (type === 'BRUTE_FORCE') {
+          for (let i = 0; i < 6; i++) {
+            await fetch('http://localhost:8080/api/demo/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: 'admin', password: 'bad_password_' + i }),
+            }).catch(() => {});
+          }
+        } else if (type === 'SQL_INJECTION') {
+          await fetch("http://localhost:8080/api/demo/products?search=%27%20OR%20%271%27=%271").catch(() => {});
+        } else if (type === 'API_ABUSE') {
+          for (let i = 0; i < 15; i++) {
+            await fetch('http://localhost:8080/api/demo/orders').catch(() => {});
+          }
+        }
+      } catch (err) {
+        // Backend offline fallback handled gracefully
+      }
+    })();
     setIsPostmanModalOpen(false);
   };
 

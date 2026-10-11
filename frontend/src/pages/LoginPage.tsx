@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { apiService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 interface LoginPageProps {
   onLoginSuccess?: (role: string) => void;
@@ -7,6 +9,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigateHome }) => {
+  const { login } = useAuth();
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
   const [selectedRole, setSelectedRole] = useState<'ADMIN' | 'ANALYST' | 'VIEWER'>('ADMIN');
@@ -44,18 +47,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onNavigate
     setTimeout(() => setStatusMessage(null), 2500);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setStatusMessage(null);
 
-    setTimeout(() => {
+    try {
+      const authUser = await login(username, password, selectedRole);
       setIsLoading(false);
-      if (onLoginSuccess) {
-        onLoginSuccess(selectedRole);
-      } else if (onNavigateHome) {
-        onNavigateHome();
-      }
-    }, 700);
+      setStatusMessage(`Authenticated as ${authUser.username} (${authUser.role})`);
+      setTimeout(() => {
+        if (onLoginSuccess) {
+          onLoginSuccess(authUser.role);
+        } else if (onNavigateHome) {
+          onNavigateHome();
+        }
+      }, 400);
+    } catch (err: any) {
+      setIsLoading(false);
+      setStatusMessage(err.message || 'Login failed');
+    }
   };
 
   return (

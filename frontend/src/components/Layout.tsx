@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ShieldAlert,
@@ -8,16 +8,29 @@ import {
   Cpu,
   ShieldCheck,
   User as UserIcon,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const Layout: React.FC = () => {
-  const navItems = [
-    { to: '/overview', label: 'Overview', icon: LayoutDashboard },
-    { to: '/incidents', label: 'Incidents', icon: ShieldAlert },
-    { to: '/traffic', label: 'Traffic', icon: Activity },
-    { to: '/rules', label: 'Rules', icon: Sliders },
-    { to: '/users', label: 'Users', icon: UserIcon },
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const allNavItems = [
+    { to: '/overview', label: 'Overview', icon: LayoutDashboard, roles: ['ADMIN', 'ANALYST', 'VIEWER'] },
+    { to: '/incidents', label: 'Incidents', icon: ShieldAlert, roles: ['ADMIN', 'ANALYST', 'VIEWER'] },
+    { to: '/traffic', label: 'Traffic', icon: Activity, roles: ['ADMIN', 'ANALYST', 'VIEWER'] },
+    { to: '/rules', label: 'Rules', icon: Sliders, roles: ['ADMIN', 'ANALYST', 'VIEWER'] },
+    { to: '/users', label: 'Users', icon: UserIcon, roles: ['ADMIN'] },
   ];
+
+  const currentRole = user?.role || 'VIEWER';
+  const navItems = allNavItems.filter((item) => item.roles.includes(currentRole));
 
   return (
     <div className="relative min-h-screen flex flex-col antialiased">
@@ -37,19 +50,29 @@ export const Layout: React.FC = () => {
           </div>
         </div>
 
-        {/* User Pill */}
+        {/* User Pill & Logout Button */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/60 border border-white/80 shadow-sm backdrop-blur-md">
             <div className="w-6 h-6 rounded-full bg-zinc-900 text-white flex items-center justify-center text-xs font-semibold">
               <UserIcon className="w-3.5 h-3.5" />
             </div>
             <div className="text-left">
-              <div className="text-xs font-bold leading-tight text-zinc-900">Security Analyst</div>
+              <div className="text-xs font-bold leading-tight text-zinc-900 capitalize">
+                {user?.username || 'Guest Operator'}
+              </div>
               <div className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                ADMIN • ROLE
+                {currentRole} • ROLE
               </div>
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            title="Log Out"
+            className="p-2 rounded-full bg-white/60 hover:bg-white border border-white/80 text-zinc-600 hover:text-black transition-all shadow-sm"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </header>
 
