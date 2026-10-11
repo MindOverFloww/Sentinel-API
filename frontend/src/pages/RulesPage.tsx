@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Sliders, ShieldCheck, Play, RefreshCw, CheckCircle2, AlertTriangle, Terminal, Code2 } from 'lucide-react';
 import { apiService } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { DetectionRuleItem } from '../types/sentinel';
 
 export const RulesPage: React.FC = () => {
+  const { user } = useAuth();
   const [rules, setRules] = useState<DetectionRuleItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [testPayload, setTestPayload] = useState("' OR '1'='1");
@@ -17,9 +19,12 @@ export const RulesPage: React.FC = () => {
   } | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (msg: string) => {
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   const fetchRules = async () => {
@@ -43,14 +48,19 @@ export const RulesPage: React.FC = () => {
   }, []);
 
   const toggleRule = async (id: string, currentEnabled: boolean) => {
+    if (user?.role !== 'ADMIN') {
+      showToast('You do not have permission to toggle rules. Only administrators can modify detection rules.', 'error');
+      return;
+    }
+
     try {
       await apiService.toggleRuleEnabled(id, !currentEnabled);
       setRules((prev) =>
         prev.map((r) => (r.id === id ? { ...r, enabled: !currentEnabled } : r))
       );
-      showToast(`Rule updated in backend: ${!currentEnabled ? 'ENABLED' : 'DISABLED'}`);
+      showToast(`Rule updated in backend: ${!currentEnabled ? 'ENABLED' : 'DISABLED'}`, 'success');
     } catch (err: any) {
-      showToast(err.message || 'Failed to toggle rule');
+      showToast(err.message || 'Failed to toggle rule', 'error');
     }
   };
 
@@ -99,8 +109,18 @@ export const RulesPage: React.FC = () => {
     <div className="w-full max-w-7xl mx-auto pb-28 pt-6 px-4 sm:px-6 lg:px-8 animate-fade-slide">
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-xs font-semibold shadow-2xl animate-fade-slide">
-          <CheckCircle2 className="w-4 h-4" />
+        <div
+          className={`fixed top-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full text-xs font-semibold shadow-2xl animate-fade-slide ${
+            toastType === 'error'
+              ? 'bg-rose-600 text-white dark:bg-rose-500 dark:text-white'
+              : 'bg-black text-white dark:bg-white dark:text-black'
+          }`}
+        >
+          {toastType === 'error' ? (
+            <AlertTriangle className="w-4 h-4 shrink-0 text-white" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          )}
           <span>{toastMessage}</span>
         </div>
       )}

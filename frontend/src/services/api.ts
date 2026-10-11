@@ -62,6 +62,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     } catch {
       // ignore
     }
+    if (response.status === 403) {
+      throw new Error(errorDetail && errorDetail !== 'Forbidden' ? errorDetail : 'Access denied: Admin permission required');
+    }
     throw new Error(`API Error ${response.status}: ${errorDetail}`);
   }
 

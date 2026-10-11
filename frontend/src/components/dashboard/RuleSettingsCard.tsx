@@ -32,7 +32,7 @@ export const RuleSettingsCard: React.FC = () => {
 
   const toggleRule = async (id: string, currentEnabled: boolean) => {
     if (user?.role !== 'ADMIN') {
-      setMessage('Admin permission required to toggle rules');
+      setMessage('You cannot toggle rules. Administrator permission is required.');
       setTimeout(() => setMessage(null), 3500);
       return;
     }
