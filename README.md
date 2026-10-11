@@ -109,9 +109,9 @@ API Sentinel ships with ready-to-test role-based accounts initialized via [`Admi
 ┌───────────────────────┬──────────────┬──────────────┬─────────────────────────────────────────────────┐
 │ Role Level            │ Username     │ Password     │ Access Permissions & Scope                      │
 ├───────────────────────┼──────────────┼──────────────┼─────────────────────────────────────────────────┤
-│ 👑 Administrator      │ admin        │ admin123     │ Full System Control, Rules Tuning, RBAC Users   │
-│ 🔍 Security Analyst   │ analyst      │ analyst123   │ Incident Triage, Status Lifecycle, Traffic Logs │
-│ 👁️ Auditor / Viewer   │ viewer       │ viewer123    │ Read-Only Metrics, Telemetry & Dashboard View   │
+│ 👑 Administrator      │ admin        │ null         │ Full System Control, Rules Tuning, RBAC Users   │
+│ 🔍 Security Analyst   │ analyst      │ null         │ Incident Triage, Status Lifecycle, Traffic Logs │
+│ 👁️ Auditor / Viewer   │ viewer       │ null         │ Read-Only Metrics, Telemetry & Dashboard View   │
 └───────────────────────┴──────────────┴──────────────┴─────────────────────────────────────────────────┘
 ```
 
