@@ -44,9 +44,7 @@ graph LR
 4. Configure the settings:
    * **Name:** `api-sentinel-backend`
    * **Root Directory:** `backend`
-   * **Runtime:** `Java` (or Docker)
-   * **Build Command:** `./mvnw clean package -DskipTests` (or `mvn clean package -DskipTests`)
-   * **Start Command:** `java -jar target/api-0.0.1-SNAPSHOT.jar`
+   * **Runtime:** `Docker` (Render automatically detects `backend/Dockerfile`)
    * **Instance Type:** `Free`
 5. Under **Environment Variables**, add:
    * `DB_URL` = `jdbc:postgresql://[supabase-host]:5432/postgres?sslmode=require`
