@@ -16,12 +16,14 @@ export const PostmanQuickTestModal: React.FC<PostmanQuickTestModalProps> = ({
 
   if (!isOpen) return null;
 
+  const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').replace(/\/$/, '');
+
   const testCases = [
     {
       title: '1. Brute-Force Authentication Test',
       type: 'BRUTE_FORCE' as const,
       description: 'Send > 5 failed login attempts in 60 seconds from Postman or cURL:',
-      curl: `curl -X POST http://localhost:8080/api/demo/login \\
+      curl: `curl -X POST ${apiBase}/demo/login \\
   -H "Content-Type: application/json" \\
   -d '{"username":"admin","password":"invalid_password"}'`,
     },
@@ -29,13 +31,13 @@ export const PostmanQuickTestModal: React.FC<PostmanQuickTestModalProps> = ({
       title: '2. SQL Injection-Like Pattern Test',
       type: 'SQL_INJECTION' as const,
       description: 'Send a malicious boolean tautology query parameter probe:',
-      curl: `curl "http://localhost:8080/api/demo/products?search=%27%20OR%20%271%27=%271"`,
+      curl: `curl "${apiBase}/demo/products?search=%27%20OR%20%271%27=%271"`,
     },
     {
       title: '3. API Abuse / Rate Flooding Test',
       type: 'API_ABUSE' as const,
       description: 'Rapidly trigger > 100 requests within 60 seconds from identical client IP:',
-      curl: `for i in {1..105}; do curl -s "http://localhost:8080/api/demo/orders" > /dev/null; done`,
+      curl: `for i in {1..105}; do curl -s "${apiBase}/demo/orders" > /dev/null; done`,
     },
   ];
 
