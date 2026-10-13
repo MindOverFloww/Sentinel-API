@@ -32,6 +32,15 @@ public class ApiEventService {
         if (event.getTimestamp() == null) {
             event.setTimestamp(LocalDateTime.now());
         }
+        if (event.getResponseTime() == null) {
+            event.setResponseTime(15L);
+        }
+        if (event.getRequestSize() == null) {
+            event.setRequestSize(128L);
+        }
+        if (event.getResponseSize() == null) {
+            event.setResponseSize(256L);
+        }
 
         // Persist the event first so detection rules can accurately query the event stream
         ApiEvent savedEvent = apiEventRepository.save(event);
