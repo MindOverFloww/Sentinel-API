@@ -95,9 +95,11 @@ public class SecurityConfig {
             ));
         }
         configuration.setAllowedMethods(
-            List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+            List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(
-            List.of("Authorization", "Content-Type", "Accept"));
+            List.of("*"));
+        configuration.setExposedHeaders(
+            List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
