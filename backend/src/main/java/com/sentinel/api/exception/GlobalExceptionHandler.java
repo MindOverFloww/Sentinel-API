@@ -40,6 +40,12 @@ public class GlobalExceptionHandler {
                 ex.getReason() == null ? "Request failed" : ex.getReason());
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName());
+    }
+
     private ResponseEntity<Map<String, Object>> error(
             HttpStatus status, String message) {
 
