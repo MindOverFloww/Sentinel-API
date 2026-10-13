@@ -81,17 +81,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        String allowedOriginsEnv = System.getenv("ALLOWED_ORIGINS");
         if (allowedOriginsEnv != null && !allowedOriginsEnv.isBlank()) {
-            configuration.setAllowedOrigins(List.of(allowedOriginsEnv.split(",")));
+            configuration.setAllowedOriginPatterns(List.of(allowedOriginsEnv.split(",")));
         } else {
             configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "https://*.vercel.app",
+                "http://localhost:[*]",
+                "http://127.0.0.1:[*]",
+                "https://apisentinelids.netlify.app",
                 "https://*.netlify.app",
+                "https://*.vercel.app",
                 "https://*.onrender.com",
-                "https://*.railway.app"
+                "*"
             ));
         }
         configuration.setAllowedMethods(
