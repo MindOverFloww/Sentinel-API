@@ -81,6 +81,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        String allowedOriginsEnv = System.getenv("ALLOWED_ORIGINS");
         if (allowedOriginsEnv != null && !allowedOriginsEnv.isBlank()) {
             configuration.setAllowedOriginPatterns(List.of(allowedOriginsEnv.split(",")));
         } else {
