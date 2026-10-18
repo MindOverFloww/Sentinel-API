@@ -40,6 +40,7 @@
 ## ⚡ Quick Start
 
 ### Project Documents : https://drive.google.com/drive/folders/1TSPrNRYqvjIZmGpoQ0-AgNAlPjnZDY3J?usp=drive_link
+#### IMP NOTE - first request for login can take about 2 - 3 min. to login.
 
 Launch both the **Backend Engine** and **Frontend SOC Dashboard** with a single command:
 
