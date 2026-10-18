@@ -39,6 +39,8 @@
 
 ## ⚡ Quick Start
 
+### Project Documents : https://drive.google.com/drive/folders/1TSPrNRYqvjIZmGpoQ0-AgNAlPjnZDY3J?usp=drive_link
+
 Launch both the **Backend Engine** and **Frontend SOC Dashboard** with a single command:
 
 ### Option A: One-Click Launchers (Recommended)
